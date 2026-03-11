@@ -1,0 +1,35 @@
+name: Social Post Engine
+on:
+  workflow_dispatch:
+    inputs:
+      type: { required: true }
+      subject: { required: true }
+      platform: { required: true }
+      caption: { required: true }
+      size: { required: true }
+      asset_url: { required: false }
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: Install dependencies
+        run: pip install google-genai tweepy requests
+      - name: Execute Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: |
+          python main.py \
+            --type "${{ github.event.inputs.type }}" \
+            --subject "${{ github.event.inputs.subject }}" \
+            --platform "${{ github.event.inputs.platform }}" \
+            --caption "${{ github.event.inputs.caption }}" \
+            --size "${{ github.event.inputs.size }}" \
+            --asset_url "${{ github.event.inputs.asset_url }}"
